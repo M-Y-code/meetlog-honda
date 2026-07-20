@@ -3,12 +3,34 @@
 HONDA営業担当者本人のみが使う、iPhone用の録音・要約・ToDo管理アプリ。
 配布・複数ユーザー対応・社内システム連携は行わない。すべての処理を端末内で完結させる。
 
+## 開発の進捗状況（最終更新: 2026-07-20）
+
+- **リポジトリ**: https://github.com/M-Y-code/meetlog-honda （パブリック、`main`ブランチ）
+- **現在のフェーズ**: Phase 1（PoC）のコード一式を実装済み。**GitHub Actions上でのシミュレータビルドが成功する状態**（commit `32b65b8` 時点）
+- **開発環境**: 作業者はWindows機で、Macを持っていない・購入もしない方針。そのため以下の無料構成を採用：
+  - コードはWindows上で編集し、`git push`
+  - ビルド確認は**GitHub Actionsのパブリックリポジトリ無料枠のmacOSランナー**で実施（`.github/workflows/build.yml`）
+  - 実機インストールは**AltStore/AltServer**（無料Apple IDでのサイドロード、AltServerはWindows上で動作）を使う予定。Apple Developer Program（年間$99）は使わない
+- **実装済みファイル一式**: `project.yml`（XcodeGen定義）、`Sources/MeetLog/` 以下に4タブのSwiftUI画面・録音/文字起こし/要約サービス・ToDo/履歴ストア一式（詳細は[README.md](./README.md)の「現時点の実装範囲」を参照）
+
+### ここまでで踏んだ落とし穴（同じ問題を繰り返さないためのメモ）
+- `FoundationModels` フレームワークは **Xcode 26 / iOS 26 SDK以降でないと存在しない**。GitHub ActionsのmacOSランナーはデフォルトで古いXcodeを向いていることがあるため、CIでは `ls -d /Applications/Xcode_*.app | sort -V | tail -n 1` で明示的に最新版を選択している
+- `project.yml` の `deploymentTarget` / `IPHONEOS_DEPLOYMENT_TARGET` は `26.0` にしてある（FoundationModelsの最低要件に合わせるため）
+- `xcodebuild` の生ログは新ビルドシステムがJSON形式（`-use-frontend-parseable-output`）で出力するため、`grep "error:"` では実際のコンパイルエラーを拾えない。CIでは **`xcbeautify`** をパイプして読みやすい形に整形している
+- `FoundationModels` だけをimportしても `Date` 等のFoundation型は使えない（`import Foundation` を別途書く必要がある）
+- SwiftUIの三項演算子で `.secondary`（HierarchicalShapeStyle）と `.red`（Color）を混ぜると型エラーになる。両辺を `Color.xxx` で揃える必要がある
+
+### 次にやること（Step 2〜3、順番に進める方針で合意済み）
+1. **Step 1（進行中）**: AltServerのセットアップ（iTunes公式版インストール → AltServerインストール → iPhoneをUSB接続・信頼 → AltServerから「Install AltStore」→ iPhone側で「設定 > 一般 > VPNとデバイス管理」でデベロッパープロファイルを信頼）。ユーザーが手元で作業中、完了報告待ち
+2. **Step 2（未着手）**: GitHub Actionsに実機（iphoneos SDK）向けの `.ipa` 書き出しジョブを追加する。署名はCIでは行わず、`CODE_SIGNING_ALLOWED=NO` 等で未署名のまま `.app`/`.ipa` を作り、AltServer側の無料Apple ID署名機能に委ねる方針
+3. **Step 3（未着手）**: 書き出した `.ipa` をAltServer経由でiPhoneに実際にインストールし、録音→オンデバイス文字起こし→Foundation Models要約が実機で動くかを初めて検証する
+
 ## 確定仕様サマリー
 
 - **利用形態**: 自分専用。配布・複数ユーザー対応・社内展開は無し。App Store審査も通さない
 - **処理方式**: 録音・文字起こし・要約・ToDo抽出まで全て端末内で完結。通信不要、バックエンドなし
 - **対応機種**: Apple Intelligence対応iPhone（iPhone 15 Pro以降）
-- **配布方法**: Apple Developer Programで署名し、自分のiPhoneへ直接インストール
+- **配布方法**: Apple Developer Program（有料）は使わず、**無料構成**（GitHub Actionsのパブリックリポジトリ無料枠でビルド → AltStore/AltServerで無料Apple IDサイドロード）で自分のiPhoneへインストールする
 
 ## 主要機能
 
