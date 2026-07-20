@@ -1,0 +1,21 @@
+# XcodeGenが生成するプロジェクトファイル（project.ymlから毎回再生成するためコミット不要）
+*.xcodeproj/
+Generated/
+
+# Xcodeビルド成果物
+build/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Xcodeユーザー環境設定
+xcuserdata/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.swiftpm/
+.build/

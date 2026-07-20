@@ -1,0 +1,33 @@
+name: MeetLog
+options:
+  bundleIdPrefix: com.tokub.meetlog
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+
+targets:
+  MeetLog:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/MeetLog
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleDisplayName: MeetLog
+        UILaunchScreen: {}
+        UIBackgroundModes:
+          - audio
+        NSMicrophoneUsageDescription: "録音のためにマイクを使用します。"
+        NSSpeechRecognitionUsageDescription: "録音内容をオンデバイスで文字起こしするために使用します。"
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tokub.meetlog
+        PRODUCT_NAME: MeetLog
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: true

@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-simulator:
+    # 無料枠で回すため、パブリックリポジトリ前提（GitHub ActionsのmacOSランナーは
+    # パブリックリポジトリなら無料・無制限）。
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      # 署名にはApple Developer Programが必要なため、CIではまず
+      # 「コードが壊れていないか」をシミュレータビルドで確認するところまでを行う。
+      # 実機用のアーカイブ・署名・.ipa書き出しは、Apple ID等の秘密情報を
+      # GitHub Secretsに設定したうえで別ジョブとして追加する想定。
+      - name: Build for iOS Simulator
+        run: |
+          xcodebuild build \
+            -project MeetLog.xcodeproj \
+            -scheme MeetLog \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
