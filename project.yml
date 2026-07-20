@@ -2,7 +2,7 @@ name: MeetLog
 options:
   bundleIdPrefix: com.tokub.meetlog
   deploymentTarget:
-    iOS: "18.0"
+    iOS: "26.0"
   createIntermediateGroups: true
 
 targets:
@@ -28,6 +28,6 @@ targets:
         PRODUCT_NAME: MeetLog
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1"
-        IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+        IPHONEOS_DEPLOYMENT_TARGET: "26.0"
         CODE_SIGN_STYLE: Automatic
         ENABLE_PREVIEWS: true

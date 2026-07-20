@@ -15,8 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Show Xcode version
-        run: xcodebuild -version
+      # ランナーには複数バージョンのXcodeが同梱されており、デフォルト選択は古いことがある。
+      # FoundationModels framework（iOS 26 SDK以降）を使うため、入っている中で最新のものを明示的に選ぶ。
+      - name: Select latest available Xcode
+        run: |
+          LATEST_XCODE=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -n 1)
+          echo "Selecting: $LATEST_XCODE"
+          sudo xcode-select -s "$LATEST_XCODE"
+          xcodebuild -version
 
       - name: Install XcodeGen
         run: brew install xcodegen
