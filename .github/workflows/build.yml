@@ -36,9 +36,17 @@ jobs:
       # GitHub Secretsに設定したうえで別ジョブとして追加する想定。
       - name: Build for iOS Simulator
         run: |
+          set -o pipefail
           xcodebuild build \
             -project MeetLog.xcodeproj \
             -scheme MeetLog \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build.log
+          exit_code=$?
+          echo ""
+          echo "===================== ERROR SUMMARY ====================="
+          grep -n "error:" build.log || echo "(no lines containing 'error:' were found)"
+          echo "==========================================================="
+          exit $exit_code
