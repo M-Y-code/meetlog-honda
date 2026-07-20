@@ -24,8 +24,8 @@ jobs:
           sudo xcode-select -s "$LATEST_XCODE"
           xcodebuild -version
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
+      - name: Install XcodeGen and xcbeautify
+        run: brew install xcodegen xcbeautify
 
       - name: Generate Xcode project
         run: xcodegen generate
@@ -34,6 +34,8 @@ jobs:
       # 「コードが壊れていないか」をシミュレータビルドで確認するところまでを行う。
       # 実機用のアーカイブ・署名・.ipa書き出しは、Apple ID等の秘密情報を
       # GitHub Secretsに設定したうえで別ジョブとして追加する想定。
+      # xcodebuildの生ログは（新ビルドシステムがJSON形式で出力するため）"error:"のような
+      # 単純な文字列検索では拾えない。xcbeautifyで人間が読める形に整形して流す。
       - name: Build for iOS Simulator
         run: |
           set -o pipefail
@@ -43,10 +45,4 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
-            2>&1 | tee build.log
-          exit_code=$?
-          echo ""
-          echo "===================== ERROR SUMMARY ====================="
-          grep -n "error:" build.log || echo "(no lines containing 'error:' were found)"
-          echo "==========================================================="
-          exit $exit_code
+            | xcbeautify
