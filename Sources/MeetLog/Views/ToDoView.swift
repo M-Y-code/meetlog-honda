@@ -59,7 +59,7 @@ private struct ToDoRow: View {
                         .foregroundStyle(.secondary)
                     Text(item.dueDate.formatted(date: .abbreviated, time: .shortened))
                         .font(.caption)
-                        .foregroundStyle(item.overdueAt == nil ? .secondary : .red)
+                        .foregroundStyle(item.overdueAt == nil ? Color.secondary : Color.red)
                 }
                 if let deadline = item.deletionDeadline {
                     Text("期限切れ・あと\(hoursRemaining(until: deadline))時間で削除")

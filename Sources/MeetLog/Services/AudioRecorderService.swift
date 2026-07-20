@@ -21,7 +21,7 @@ final class AudioRecorderService: ObservableObject {
 
     func start(to fileURL: URL) throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .spokenAudio, options: [.allowBluetooth, .mixWithOthers])
+        try session.setCategory(.playAndRecord, mode: .spokenAudio, options: [.allowBluetoothHFP, .mixWithOthers])
         try session.setActive(true)
 
         let input = engine.inputNode
